@@ -5,16 +5,17 @@ import { Platform } from 'react-native';
 export const API_BASE_URL =
   Platform.OS === 'android' ? 'http://10.0.2.2:8080/api' : 'http://localhost:8080/api';
 
-async function request(path, init) {
+async function request(path, init = {}) {
+  const { headers: extraHeaders, ...restInit } = init;
   let response;
 
   try {
     response = await fetch(`${API_BASE_URL}${path}`, {
       headers: {
         'Content-Type': 'application/json',
-        ...(init.headers ?? {}),
+        ...(extraHeaders ?? {}),
       },
-      ...init,
+      ...restInit,
     });
   } catch (error) {
     throw new Error(
@@ -44,5 +45,65 @@ export function loginRequest(payload) {
   return request('/auth/login', {
     method: 'POST',
     body: JSON.stringify(payload),
+  });
+}
+
+
+export function getExpenses(month, token) {
+  return request(`/expenses?month=${month}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
+export function createExpense(payload, token) {
+  return request('/expenses', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
+export function updateExpense(id, payload, token) {
+  return request(`/expenses/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(payload),
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
+export function deleteExpense(id, token) {
+  return request(`/expenses/${id}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
+
+export function getLimit(month, token) {
+  return request(`/limits?month=${month}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
+export function createLimit(payload, token) {
+  return request('/limits', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
+export function updateLimit(id, payload, token) {
+  return request(`/limits/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(payload),
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
+export function deleteLimit(id, token) {
+  return request(`/limits/${id}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` },
   });
 }

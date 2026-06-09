@@ -2,7 +2,9 @@ import { Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StyleSheet, Text, View } from 'react-native';
 
+import ExpenseScreen from '../screens/ExpenseScreen';
 import HomeScreen from '../screens/HomeScreen';
+import LimitScreen from '../screens/LimitScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -49,12 +51,8 @@ export default function AppTabs() {
       <Tab.Screen name="Home">
         {() => <PlaceholderScreen label="Home em construcao" />}
       </Tab.Screen>
-      <Tab.Screen name="Balance">
-        {() => <PlaceholderScreen label="Limites em construcao" />}
-      </Tab.Screen>
-      <Tab.Screen name="Add">
-        {() => <PlaceholderScreen label="Despesas em construcao" />}
-      </Tab.Screen>
+      <Tab.Screen name="Balance" component={LimitScreen} />
+      <Tab.Screen name="Add" component={ExpenseScreen} />
       <Tab.Screen name="Profile" component={HomeScreen} />
     </Tab.Navigator>
   );
