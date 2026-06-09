@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import {
   ActivityIndicator,
@@ -11,19 +12,11 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useAuth } from '../context/AuthContext';
 import { createExpense, deleteExpense, getExpenses, updateExpense } from '../services/api';
-import MonthPicker, {
-  generateMonthOptions,
-  getCurrentYearMonth,
-  isPastMonth,
-} from '../components/MonthPicker';
-
-const FORM_MONTH_OPTIONS = generateMonthOptions(0, 11);
-const QUERY_MONTH_OPTIONS = generateMonthOptions(24, 12);
+import MonthYearPicker, { getCurrentYearMonth, isPastMonth } from '../components/MonthYearPicker';
 
 function formatCurrency(value) {
   const num = Number(value);
@@ -141,14 +134,10 @@ export default function ExpenseScreen() {
         setError(e.message);
       }
     };
-    if (Platform.OS === 'web') {
-      if (window.confirm(`Deseja excluir "${expense.description}"?`)) execute();
-    } else {
-      Alert.alert('Excluir despesa', `Deseja excluir "${expense.description}"?`, [
-        { text: 'Cancelar', style: 'cancel' },
-        { text: 'Excluir', style: 'destructive', onPress: execute },
-      ]);
-    }
+    Alert.alert('Excluir despesa', `Deseja excluir "${expense.description}"?`, [
+      { text: 'Cancelar', style: 'cancel' },
+      { text: 'Excluir', style: 'destructive', onPress: execute },
+    ]);
   }
 
   return (
@@ -177,7 +166,7 @@ export default function ExpenseScreen() {
           />
 
           <Text style={styles.label}>Mês</Text>
-          <MonthPicker value={month} onChange={setMonth} options={FORM_MONTH_OPTIONS} />
+          <MonthYearPicker value={month} onChange={setMonth} />
 
           {!!error && <Text style={styles.errorText}>{error}</Text>}
           {!!success && <Text style={styles.successText}>{success}</Text>}
@@ -194,10 +183,9 @@ export default function ExpenseScreen() {
 
           <Text style={styles.sectionTitle}>Histórico</Text>
 
-          <MonthPicker
+          <MonthYearPicker
             value={queryMonth}
             onChange={handleQueryMonthChange}
-            options={QUERY_MONTH_OPTIONS}
             placeholder="Selecione um mês"
           />
 
