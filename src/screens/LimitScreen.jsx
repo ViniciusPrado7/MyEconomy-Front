@@ -15,15 +15,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useAuth } from '../context/AuthContext';
 import { createLimit, deleteLimit, getLimit, updateLimit } from '../services/api';
-import MonthPicker, {
-  formatMonthLabel,
-  generateMonthOptions,
-  getCurrentYearMonth,
-  isPastMonth,
-} from '../components/MonthPicker';
-
-const FORM_MONTH_OPTIONS = generateMonthOptions(0, 11);
-const QUERY_MONTH_OPTIONS = generateMonthOptions(24, 12);
+import MonthYearPicker, { formatMonthLabel, getCurrentYearMonth, isPastMonth } from '../components/MonthYearPicker';
 
 function formatCurrency(value) {
   const num = Number(value);
@@ -133,14 +125,10 @@ export default function LimitScreen() {
         setError(e.message);
       }
     };
-    if (Platform.OS === 'web') {
-      if (window.confirm('Deseja excluir este limite mensal?')) execute();
-    } else {
-      Alert.alert('Excluir limite', 'Deseja excluir este limite mensal?', [
-        { text: 'Cancelar', style: 'cancel' },
-        { text: 'Excluir', style: 'destructive', onPress: execute },
-      ]);
-    }
+    Alert.alert('Excluir limite', 'Deseja excluir este limite mensal?', [
+      { text: 'Cancelar', style: 'cancel' },
+      { text: 'Excluir', style: 'destructive', onPress: execute },
+    ]);
   }
 
   const isLimitLocked = limit ? isPastMonth(limit.referenceMonth) : false;
@@ -164,7 +152,7 @@ export default function LimitScreen() {
           />
 
           <Text style={styles.label}>Mês</Text>
-          <MonthPicker value={month} onChange={setMonth} options={FORM_MONTH_OPTIONS} />
+          <MonthYearPicker value={month} onChange={setMonth} />
 
           {!!error && <Text style={styles.errorText}>{error}</Text>}
           {!!success && <Text style={styles.successText}>{success}</Text>}
@@ -181,10 +169,9 @@ export default function LimitScreen() {
 
           <Text style={styles.sectionTitle}>Consulta</Text>
 
-          <MonthPicker
+          <MonthYearPicker
             value={queryMonth}
             onChange={handleQueryMonthChange}
-            options={QUERY_MONTH_OPTIONS}
             placeholder="Selecione um mês"
           />
 
