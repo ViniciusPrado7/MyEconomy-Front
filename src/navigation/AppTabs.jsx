@@ -1,28 +1,35 @@
 import { Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import ExpenseScreen from '../screens/ExpenseScreen';
 import HomeScreen from '../screens/HomeScreen';
 import LimitScreen from '../screens/LimitScreen';
-import SavingsScreen from '../screens/SavingsScreen';
 
 const Tab = createBottomTabNavigator();
 
+function PlaceholderScreen({ label }) {
+  return (
+    <View style={styles.placeholderContainer}>
+      <Text style={styles.placeholderText}>{label}</Text>
+    </View>
+  );
+}
+
 function getIconName(routeName, focused) {
-  if (routeName === 'Profile') {
-    return focused ? 'person' : 'person-outline';
+  if (routeName === 'Home') {
+    return focused ? 'home' : 'home-outline';
   }
 
-  if (routeName === 'Savings') {
+  if (routeName === 'Balance') {
     return 'logo-usd';
   }
 
-  if (routeName === 'Expenses') {
-    return focused ? 'document' : 'document-outline';
+  if (routeName === 'Add') {
+    return focused ? 'add-circle' : 'add-circle-outline';
   }
 
-  return focused ? 'settings' : 'settings-outline';
+  return focused ? 'person' : 'person-outline';
 }
 
 export default function AppTabs() {
@@ -41,10 +48,12 @@ export default function AppTabs() {
           </View>
         ),
       })}>
+      <Tab.Screen name="Home">
+        {() => <PlaceholderScreen label="Home em construcao" />}
+      </Tab.Screen>
+      <Tab.Screen name="Balance" component={LimitScreen} />
+      <Tab.Screen name="Add" component={ExpenseScreen} />
       <Tab.Screen name="Profile" component={HomeScreen} />
-      <Tab.Screen name="Savings" component={SavingsScreen} />
-      <Tab.Screen name="Expenses" component={ExpenseScreen} />
-      <Tab.Screen name="Limits" component={LimitScreen} />
     </Tab.Navigator>
   );
 }
@@ -67,5 +76,17 @@ const styles = StyleSheet.create({
   },
   iconWrapperActive: {
     backgroundColor: '#3F9447',
+  },
+  placeholderContainer: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 24,
+  },
+  placeholderText: {
+    color: '#222222',
+    fontSize: 18,
+    textAlign: 'center',
   },
 });
