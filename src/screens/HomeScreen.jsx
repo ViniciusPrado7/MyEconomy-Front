@@ -23,7 +23,7 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
-        <View style={styles.content}>
+        <View style={styles.card}>
           <Text style={styles.title}>Meus Dados</Text>
 
           <View style={styles.infoBlock}>
@@ -57,37 +57,44 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
+    paddingHorizontal: 12,
+    paddingTop: 8,
+    paddingBottom: 0,
     backgroundColor: '#FFFFFF',
-    alignItems: 'center',
   },
-  content: {
-    width: '60%',
-    maxWidth: 280,
-    minWidth: 228,
-    marginTop: 142,
+  card: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
+    paddingHorizontal: 32,
+    paddingTop: 56,
+    paddingBottom: 32,
   },
   title: {
-    fontSize: 30,
+    fontSize: 32,
     fontWeight: '800',
     color: '#111111',
-    marginBottom: 34,
+    marginBottom: 40,
     textAlign: 'center',
   },
   infoBlock: {
-    marginBottom: 22,
+    marginBottom: 24,
   },
   label: {
     color: '#111111',
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '700',
-    marginBottom: 8,
+    marginBottom: 6,
   },
   value: {
-    color: '#222222',
-    fontSize: 16,
+    color: '#4A4A4A',
+    fontSize: 15,
   },
   button: {
-    marginTop: 8,
+    marginTop: 'auto',
     backgroundColor: '#4DB657',
     borderRadius: 10,
     minHeight: 52,
@@ -96,7 +103,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#FFFFFF',
-    fontSize: 18,
-    fontWeight: '400',
+    fontSize: 16,
+    fontWeight: '700',
   },
 });

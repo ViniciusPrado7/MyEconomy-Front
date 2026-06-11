@@ -48,7 +48,7 @@ export default function LimitScreen() {
     try {
       const data = await getLimit(m, token);
       setLimit(data ?? null);
-    } catch (_error) {
+    } catch (e) {
       setLimit(null);
     } finally {
       setQueryLoading(false);
