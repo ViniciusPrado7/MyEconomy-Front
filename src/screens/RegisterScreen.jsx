@@ -42,14 +42,14 @@ export default function RegisterScreen({ onGoToLogin }) {
     const nextErrors = {
       name: name.trim() ? '' : 'Informe seu nome.',
       email: !email.trim()
-        ? 'Informe seu email.'
+        ? 'Informe seu e-mail.'
         : !isValidEmail(email.trim())
-          ? 'Informe um email valido.'
+          ? 'Informe um e-mail válido.'
           : '',
       birthDate: !birthDate.trim()
         ? 'Informe sua data de nascimento.'
         : !isValidBirthDate(birthDate.trim())
-          ? 'Use o formato YYYY-MM-DD com uma data anterior a hoje.'
+          ? 'Informe uma data de nascimento anterior a hoje.'
           : '',
       password: password.trim().length >= 6 ? '' : 'A senha precisa ter pelo menos 6 caracteres.',
       confirmPassword: confirmPassword.trim() !== password.trim() ? 'As senhas precisam ser iguais.' : '',
@@ -83,7 +83,7 @@ export default function RegisterScreen({ onGoToLogin }) {
         onGoToLogin();
       }, 1000);
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : 'Nao foi possivel criar a conta.');
+      setErrorMessage(error instanceof Error ? error.message : 'Não foi possível criar a conta.');
     } finally {
       setIsSubmitting(false);
     }
@@ -98,7 +98,7 @@ export default function RegisterScreen({ onGoToLogin }) {
       primaryDisabled={isSubmitting}
       secondaryActionLabel="Voltar"
       onSecondaryAction={onGoToLogin}
-      footerText="Ja possui conta?"
+      footerText="Já possui uma conta?"
       footerActionLabel="Entrar"
       onFooterAction={onGoToLogin}>
       <Feedback type="success" message={successMessage} />
@@ -113,10 +113,10 @@ export default function RegisterScreen({ onGoToLogin }) {
       />
 
       <Field
-        label="Email"
+        label="E-mail"
         value={email}
         onChangeText={setEmail}
-        placeholder="voce@email.com"
+        placeholder="voce@exemplo.com"
         autoCapitalize="none"
         keyboardType="email-address"
         autoComplete="email"
@@ -134,7 +134,7 @@ export default function RegisterScreen({ onGoToLogin }) {
         label="Senha"
         value={password}
         onChangeText={setPassword}
-        placeholder="Minimo de 6 caracteres"
+        placeholder="Mínimo de 6 caracteres"
         secureTextEntry
         autoCapitalize="none"
         autoComplete="new-password"

@@ -66,12 +66,12 @@ export default function ExpenseScreen() {
     setSuccess('');
 
     if (!description.trim()) {
-      setError('Descrição é obrigatória.');
+      setError('A descrição é obrigatória.');
       return;
     }
     const numValue = Number(value.replace(',', '.'));
     if (!value.trim() || isNaN(numValue) || numValue <= 0) {
-      setError('Valor deve ser um número positivo.');
+      setError('O valor deve ser um número positivo.');
       return;
     }
 
@@ -192,7 +192,7 @@ export default function ExpenseScreen() {
           {queryLoading ? (
             <ActivityIndicator color="#4DB657" style={styles.loader} />
           ) : queryMonth !== '' && expenses.length === 0 ? (
-            <Text style={styles.emptyText}>Nenhuma despesa foi encontrada</Text>
+            <Text style={styles.emptyText}>Nenhuma despesa encontrada.</Text>
           ) : (
             expenses.map((expense) => {
               const locked = isPastMonth(expense.referenceMonth);

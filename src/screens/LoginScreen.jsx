@@ -21,9 +21,9 @@ export default function LoginScreen({ onGoToRegister }) {
   async function handleSubmit() {
     const nextErrors = {
       email: !email.trim()
-        ? 'Informe seu email.'
+        ? 'Informe seu e-mail.'
         : !isValidEmail(email.trim())
-          ? 'Informe um email valido.'
+          ? 'Informe um e-mail válido.'
           : '',
       password: password.trim().length >= 6 ? '' : 'A senha precisa ter pelo menos 6 caracteres.',
     };
@@ -41,7 +41,7 @@ export default function LoginScreen({ onGoToRegister }) {
       await signIn({ email: email.trim(), password });
       setSuccessMessage('Login realizado com sucesso.');
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : 'Nao foi possivel entrar.');
+      setErrorMessage(error instanceof Error ? error.message : 'Não foi possível entrar.');
     } finally {
       setIsSubmitting(false);
     }
@@ -54,17 +54,17 @@ export default function LoginScreen({ onGoToRegister }) {
       primaryLabel={isSubmitting ? 'Entrando...' : 'Entrar'}
       onPrimaryPress={handleSubmit}
       primaryDisabled={isSubmitting}
-      footerText="Nao possui conta?"
+      footerText="Não possui uma conta?"
       footerActionLabel="Criar aqui"
       onFooterAction={onGoToRegister}>
       <Feedback type="success" message={successMessage} />
       <Feedback type="error" message={errorMessage} />
 
       <Field
-        label="Email"
+        label="E-mail"
         value={email}
         onChangeText={setEmail}
-        placeholder="voce@email.com"
+        placeholder="voce@exemplo.com"
         autoCapitalize="none"
         keyboardType="email-address"
         autoComplete="email"
