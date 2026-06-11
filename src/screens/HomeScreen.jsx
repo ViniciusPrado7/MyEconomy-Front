@@ -32,7 +32,7 @@ export default function HomeScreen() {
           </View>
 
           <View style={styles.infoBlock}>
-            <Text style={styles.label}>Email</Text>
+            <Text style={styles.label}>E-mail</Text>
             <Text style={styles.value}>{session ? session.email : '-'}</Text>
           </View>
 

@@ -1,6 +1,6 @@
 import { Platform } from 'react-native';
 
-// Troque para o IP da sua maquina se testar em celular fisico, por exemplo:
+// Troque para o IP da sua máquina se testar em celular físico, por exemplo:
 // http://192.168.0.10:8080/api
 export const API_BASE_URL =
   Platform.OS === 'android' ? 'http://10.0.2.2:8080/api' : 'http://localhost:8080/api';
@@ -19,7 +19,7 @@ async function request(path, init = {}) {
     });
   } catch (error) {
     throw new Error(
-      'Nao foi possivel conectar com o backend. Se estiver no navegador, verifique o CORS do Spring Boot.'
+      'Não foi possível conectar ao backend. Se estiver no navegador, verifique o CORS do Spring Boot.'
     );
   }
 
@@ -27,8 +27,10 @@ async function request(path, init = {}) {
 
   if (!response.ok) {
     const message =
-      data?.message ?? data?.error ?? 'Nao foi possivel concluir a requisicao agora.';
-    throw new Error(message);
+      data?.message ?? data?.error ?? 'Não foi possível concluir a requisição agora.';
+    const error = new Error(message);
+    error.status = response.status;
+    throw error;
   }
 
   return data;

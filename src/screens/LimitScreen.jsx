@@ -66,7 +66,7 @@ export default function LimitScreen() {
 
     const numValue = Number(value.replace(',', '.'));
     if (!value.trim() || isNaN(numValue) || numValue <= 0) {
-      setError('Valor deve ser um número positivo.');
+      setError('O valor deve ser um número positivo.');
       return;
     }
 
@@ -178,7 +178,7 @@ export default function LimitScreen() {
           {queryLoading ? (
             <ActivityIndicator color="#4DB657" style={styles.loader} />
           ) : queryMonth && !limit ? (
-            <Text style={styles.emptyText}>Nenhum limite foi encontrado</Text>
+            <Text style={styles.emptyText}>Nenhum limite encontrado.</Text>
           ) : limit ? (
             <View>
               <View style={styles.limitRow}>
