@@ -17,7 +17,7 @@ async function request(path, init = {}) {
       },
       ...restInit,
     });
-  } catch (error) {
+  } catch (_error) {
     throw new Error(
       'Nao foi possivel conectar com o backend. Se estiver no navegador, verifique o CORS do Spring Boot.'
     );
@@ -28,7 +28,9 @@ async function request(path, init = {}) {
   if (!response.ok) {
     const message =
       data?.message ?? data?.error ?? 'Nao foi possivel concluir a requisicao agora.';
-    throw new Error(message);
+    const error = new Error(message);
+    error.status = response.status;
+    throw error;
   }
 
   return data;
