@@ -40,6 +40,7 @@ export default function LimitScreen() {
   const [queryMonth, setQueryMonth] = useState('');
   const [limit, setLimit] = useState(null);
   const [queryLoading, setQueryLoading] = useState(false);
+  const queryMonthLocked = queryMonth && isPastMonth(queryMonth);
 
   async function loadLimit(m) {
     if (!m) return;
@@ -131,7 +132,7 @@ export default function LimitScreen() {
     ]);
   }
 
-  const isLimitLocked = limit ? isPastMonth(limit.referenceMonth) : false;
+  const isLimitLocked = queryMonthLocked || (limit ? isPastMonth(limit.referenceMonth) : false);
 
   return (
     <SafeAreaView style={styles.safeArea}>

@@ -42,6 +42,7 @@ export default function ExpenseScreen() {
   const [queryMonth, setQueryMonth] = useState('');
   const [expenses, setExpenses] = useState([]);
   const [queryLoading, setQueryLoading] = useState(false);
+  const queryMonthLocked = queryMonth && isPastMonth(queryMonth);
 
   async function loadExpenses(m) {
     if (!m) return;
@@ -195,7 +196,7 @@ export default function ExpenseScreen() {
             <Text style={styles.emptyText}>Nenhuma despesa encontrada.</Text>
           ) : (
             expenses.map((expense) => {
-              const locked = isPastMonth(expense.referenceMonth);
+              const locked = queryMonthLocked || isPastMonth(expense.referenceMonth);
               return (
                 <View key={expense.id} style={styles.expenseRow}>
                   <View style={styles.expenseLeft}>
