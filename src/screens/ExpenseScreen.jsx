@@ -1,11 +1,11 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useState } from 'react';
+import React, { memo, useCallback, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
+  FlatList,
   KeyboardAvoidingView,
   Platform,
-  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -44,18 +44,21 @@ export default function ExpenseScreen() {
   const [queryLoading, setQueryLoading] = useState(false);
   const queryMonthLocked = queryMonth && isPastMonth(queryMonth);
 
-  async function loadExpenses(m) {
-    if (!m) return;
-    setQueryLoading(true);
-    try {
-      const data = await getExpenses(m, token);
-      setExpenses(Array.isArray(data) ? data : []);
-    } catch {
-      setExpenses([]);
-    } finally {
-      setQueryLoading(false);
-    }
-  }
+  const loadExpenses = useCallback(
+    async (m) => {
+      if (!m) return;
+      setQueryLoading(true);
+      try {
+        const data = await getExpenses(m, token);
+        setExpenses(Array.isArray(data) ? data : []);
+      } catch {
+        setExpenses([]);
+      } finally {
+        setQueryLoading(false);
+      }
+    },
+    [token]
+  );
 
   function handleQueryMonthChange(m) {
     setQueryMonth(m);
@@ -115,119 +118,144 @@ export default function ExpenseScreen() {
     clearForm();
   }
 
-  function handleEdit(expense) {
+  const handleEdit = useCallback((expense) => {
     setEditingId(expense.id);
     setDescription(expense.description);
     setValue(String(expense.value));
     setMonth(expense.referenceMonth);
     setError('');
     setSuccess('');
-  }
+  }, []);
 
-  function handleDelete(expense) {
-    const execute = async () => {
-      try {
-        await deleteExpense(expense.id, token);
-        setSuccess('Despesa excluída.');
-        setError('');
-        loadExpenses(queryMonth);
-      } catch (e) {
-        setError(e.message);
-      }
-    };
-    Alert.alert('Excluir despesa', `Deseja excluir "${expense.description}"?`, [
-      { text: 'Cancelar', style: 'cancel' },
-      { text: 'Excluir', style: 'destructive', onPress: execute },
-    ]);
-  }
+  const handleDelete = useCallback(
+    (expense) => {
+      const execute = async () => {
+        try {
+          await deleteExpense(expense.id, token);
+          setSuccess('Despesa excluída.');
+          setError('');
+          loadExpenses(queryMonth);
+        } catch (e) {
+          setError(e.message);
+        }
+      };
+      Alert.alert('Excluir despesa', `Deseja excluir "${expense.description}"?`, [
+        { text: 'Cancelar', style: 'cancel' },
+        { text: 'Excluir', style: 'destructive', onPress: execute },
+      ]);
+    },
+    [queryMonth, token, loadExpenses]
+  );
+
+  const renderExpense = useCallback(
+    ({ item }) => {
+      const locked = queryMonthLocked || isPastMonth(item.referenceMonth);
+      return (
+        <ExpenseItem
+          expense={item}
+          locked={locked}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+        />
+      );
+    },
+    [handleDelete, handleEdit, queryMonthLocked]
+  );
+
+  const renderHeader = () => (
+    <>
+      <Text style={styles.title}>Despesa</Text>
+
+      <Text style={styles.label}>Descrição</Text>
+      <TextInput
+        style={styles.input}
+        value={description}
+        onChangeText={setDescription}
+      />
+
+      <Text style={styles.label}>Valor</Text>
+      <TextInput
+        style={styles.input}
+        value={value}
+        onChangeText={setValue}
+        keyboardType="decimal-pad"
+      />
+
+      <Text style={styles.label}>Mês</Text>
+      <MonthYearPicker value={month} onChange={setMonth} />
+
+      {!!error && <Text style={styles.errorText}>{error}</Text>}
+      {!!success && <Text style={styles.successText}>{success}</Text>}
+
+      <TouchableOpacity style={styles.saveButton} onPress={handleSave} disabled={loading}>
+        <Text style={styles.saveButtonText}>{loading ? 'SALVANDO...' : 'SALVAR'}</Text>
+      </TouchableOpacity>
+
+      {!!editingId && (
+        <TouchableOpacity style={styles.cancelLink} onPress={clearEdit}>
+          <Text style={styles.cancelLinkText}>Cancelar edição</Text>
+        </TouchableOpacity>
+      )}
+
+      <Text style={styles.sectionTitle}>Histórico</Text>
+
+      <MonthYearPicker
+        value={queryMonth}
+        onChange={handleQueryMonthChange}
+        placeholder="Selecione um mês"
+      />
+
+      {queryLoading && <ActivityIndicator color="#4DB657" style={styles.loader} />}
+    </>
+  );
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <KeyboardAvoidingView
         style={styles.flex}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-        <ScrollView
+        <FlatList
+          data={expenses}
+          keyExtractor={(item) => String(item.id)}
+          renderItem={renderExpense}
+          ListHeaderComponent={renderHeader}
+          ListEmptyComponent={
+            !queryLoading && queryMonth !== '' ? (
+              <Text style={styles.emptyText}>Nenhuma despesa encontrada.</Text>
+            ) : null
+          }
           contentContainerStyle={styles.container}
-          keyboardShouldPersistTaps="handled">
-          <Text style={styles.title}>Despesa</Text>
-
-          <Text style={styles.label}>Descrição</Text>
-          <TextInput
-            style={styles.input}
-            value={description}
-            onChangeText={setDescription}
-          />
-
-          <Text style={styles.label}>Valor</Text>
-          <TextInput
-            style={styles.input}
-            value={value}
-            onChangeText={setValue}
-            keyboardType="decimal-pad"
-          />
-
-          <Text style={styles.label}>Mês</Text>
-          <MonthYearPicker value={month} onChange={setMonth} />
-
-          {!!error && <Text style={styles.errorText}>{error}</Text>}
-          {!!success && <Text style={styles.successText}>{success}</Text>}
-
-          <TouchableOpacity style={styles.saveButton} onPress={handleSave} disabled={loading}>
-            <Text style={styles.saveButtonText}>{loading ? 'SALVANDO...' : 'SALVAR'}</Text>
-          </TouchableOpacity>
-
-          {!!editingId && (
-            <TouchableOpacity style={styles.cancelLink} onPress={clearEdit}>
-              <Text style={styles.cancelLinkText}>Cancelar edição</Text>
-            </TouchableOpacity>
-          )}
-
-          <Text style={styles.sectionTitle}>Histórico</Text>
-
-          <MonthYearPicker
-            value={queryMonth}
-            onChange={handleQueryMonthChange}
-            placeholder="Selecione um mês"
-          />
-
-          {queryLoading ? (
-            <ActivityIndicator color="#4DB657" style={styles.loader} />
-          ) : queryMonth !== '' && expenses.length === 0 ? (
-            <Text style={styles.emptyText}>Nenhuma despesa encontrada.</Text>
-          ) : (
-            expenses.map((expense) => {
-              const locked = queryMonthLocked || isPastMonth(expense.referenceMonth);
-              return (
-                <View key={expense.id} style={styles.expenseRow}>
-                  <View style={styles.expenseLeft}>
-                    <Text style={styles.expenseName} numberOfLines={1}>
-                      {expense.description}
-                    </Text>
-                    <Text style={styles.expenseValue}>{formatCurrency(expense.value)}</Text>
-                  </View>
-                  {!locked && (
-                    <View style={styles.rowActions}>
-                      <TouchableOpacity
-                        style={styles.actionBtn}
-                        onPress={() => handleEdit(expense)}>
-                        <Ionicons name="pencil" size={16} color="#FFFFFF" />
-                      </TouchableOpacity>
-                      <TouchableOpacity
-                        style={[styles.actionBtn, styles.actionBtnRight]}
-                        onPress={() => handleDelete(expense)}>
-                        <Ionicons name="trash" size={16} color="#FFFFFF" />
-                      </TouchableOpacity>
-                    </View>
-                  )}
-                </View>
-              );
-            })
-          )}
-        </ScrollView>
+          keyboardShouldPersistTaps="handled"
+        />
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
+
+const ExpenseItem = memo(function ExpenseItem({ expense, locked, onEdit, onDelete }) {
+  return (
+    <View style={styles.expenseRow}>
+      <View style={styles.expenseLeft}>
+        <Text style={styles.expenseName} numberOfLines={1}>
+          {expense.description}
+        </Text>
+        <Text style={styles.expenseValue}>{formatCurrency(expense.value)}</Text>
+      </View>
+      {!locked && (
+        <View style={styles.rowActions}>
+          <TouchableOpacity style={styles.actionBtn} onPress={() => onEdit(expense)}>
+            <Ionicons name="pencil" size={16} color="#FFFFFF" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.actionBtn, styles.actionBtnRight]}
+            onPress={() => onDelete(expense)}>
+            <Ionicons name="trash" size={16} color="#FFFFFF" />
+          </TouchableOpacity>
+        </View>
+      )}
+    </View>
+  );
+});
 
 const styles = StyleSheet.create({
   flex: {
