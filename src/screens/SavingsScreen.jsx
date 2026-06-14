@@ -101,6 +101,7 @@ export default function SavingsScreen({ navigation }) {
   const progress = Math.min(expenseRatio, 1);
   const isOverLimit = expenseRatio > 1;
   const shouldEncourage = expenseRatio > 0.5 && !isOverLimit;
+  const isClosedMonth = month < getCurrentYearMonth();
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -137,7 +138,20 @@ export default function SavingsScreen({ navigation }) {
           <>
             <View style={styles.feedbackCard}>
               <Text style={styles.emoji}>😴</Text>
-              <Text style={styles.feedbackText}>Progresso não encontrado</Text>
+              <Text style={styles.feedbackText}>
+                {totalExpenses > 0
+                  ? 'Você já cadastrou despesas, mas ainda não definiu um limite'
+                  : 'Nenhum limite foi registrado para este mês'}
+              </Text>
+            </View>
+            <View style={styles.progressSection}>
+              <View style={styles.progressLabels}>
+                <Text style={styles.progressText}>Progresso</Text>
+                <Text style={styles.progressText}>{formatCurrency(totalExpenses)}/sem limite</Text>
+              </View>
+              <View style={styles.progressTrack}>
+                <View style={[styles.progressFill, { width: totalExpenses > 0 ? '100%' : '0%' }]} />
+              </View>
             </View>
             <TouchableOpacity
               style={styles.startButton}
@@ -149,16 +163,18 @@ export default function SavingsScreen({ navigation }) {
           <>
             <View style={styles.feedbackCard}>
               <Text style={styles.emoji}>
-                {isOverLimit ? '😓' : shouldEncourage ? '🙂' : '🤩'}
+                {isClosedMonth ? (isOverLimit ? '😓' : '🤩') : shouldEncourage ? '🙂' : isOverLimit ? '😓' : '🤩'}
               </Text>
               <Text style={styles.feedbackText}>
-                {isOverLimit
-                  ? 'Objetivo não atingido'
-                  : shouldEncourage
-                    ? 'Continue assim!'
-                    : 'Parabéns, você economizou'}
+                {isClosedMonth
+                  ? isOverLimit
+                    ? 'Objetivo não atingido'
+                    : 'Parabéns, você economizou'
+                  : isOverLimit
+                    ? 'Você ultrapassou o limite atual'
+                    : 'Continue assim!'}
               </Text>
-              {!shouldEncourage && (
+              {isClosedMonth && (
                 <Text style={styles.savingsValue}>{formatCurrency(savings)}</Text>
               )}
             </View>

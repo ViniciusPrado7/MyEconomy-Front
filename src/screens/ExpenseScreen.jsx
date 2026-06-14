@@ -79,6 +79,11 @@ export default function ExpenseScreen() {
       return;
     }
 
+    if (isPastMonth(month)) {
+      setError('NÃ£o Ã© permitido cadastrar ou editar despesas de meses anteriores.');
+      return;
+    }
+
     setLoading(true);
     try {
       const payload = {

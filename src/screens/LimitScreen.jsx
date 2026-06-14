@@ -71,6 +71,11 @@ export default function LimitScreen() {
       return;
     }
 
+    if (isPastMonth(month)) {
+      setError('NÃ£o Ã© permitido cadastrar ou editar limites de meses anteriores.');
+      return;
+    }
+
     setLoading(true);
     try {
       const payload = { value: numValue, referenceMonth: month };

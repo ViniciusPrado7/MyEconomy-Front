@@ -9,40 +9,57 @@ import SavingsScreen from '../screens/SavingsScreen';
 
 const Tab = createBottomTabNavigator();
 
-function getIconName(routeName, focused) {
+function getIconName(routeName) {
   if (routeName === 'Profile') {
-    return focused ? 'person' : 'person-outline';
+    return 'person';
   }
 
-  if (routeName === 'Savings') {
+  if (routeName === 'Home') {
     return 'logo-usd';
   }
 
   if (routeName === 'Expenses') {
-    return focused ? 'document' : 'document-outline';
+    return 'document';
   }
 
-  return focused ? 'settings' : 'settings-outline';
+  return 'settings';
+}
+
+function TabBarIcon({ routeName, focused, size }) {
+  const color = '#FFFFFF';
+
+  if (routeName === 'Expenses') {
+    return (
+      <View style={[styles.iconWrapper, focused && styles.iconWrapperActive]}>
+        <Ionicons name="document" size={size} color={color} />
+        <Ionicons name="add" size={10} color={color} style={styles.plusIcon} />
+      </View>
+    );
+  }
+
+  return (
+    <View style={[styles.iconWrapper, focused && styles.iconWrapperActive]}>
+      <Ionicons name={getIconName(routeName)} size={size} color={color} />
+    </View>
+  );
 }
 
 export default function AppTabs() {
   return (
     <Tab.Navigator
-      initialRouteName="Profile"
+      initialRouteName="Home"
       screenOptions={({ route }) => ({
         headerShown: false,
         tabBarShowLabel: false,
         tabBarStyle: styles.tabBar,
         tabBarActiveTintColor: '#FFFFFF',
-        tabBarInactiveTintColor: '#F2FFF4',
-        tabBarIcon: ({ color, focused, size }) => (
-          <View style={[styles.iconWrapper, focused && styles.iconWrapperActive]}>
-            <Ionicons name={getIconName(route.name, focused)} size={size} color={color} />
-          </View>
+        tabBarInactiveTintColor: '#FFFFFF',
+        tabBarIcon: ({ focused, size }) => (
+          <TabBarIcon routeName={route.name} focused={focused} size={size} />
         ),
       })}>
       <Tab.Screen name="Profile" component={HomeScreen} />
-      <Tab.Screen name="Savings" component={SavingsScreen} />
+      <Tab.Screen name="Home" component={SavingsScreen} />
       <Tab.Screen name="Expenses" component={ExpenseScreen} />
       <Tab.Screen name="Limits" component={LimitScreen} />
     </Tab.Navigator>
@@ -67,5 +84,10 @@ const styles = StyleSheet.create({
   },
   iconWrapperActive: {
     backgroundColor: '#3F9447',
+  },
+  plusIcon: {
+    position: 'absolute',
+    right: 4,
+    bottom: 5,
   },
 });
