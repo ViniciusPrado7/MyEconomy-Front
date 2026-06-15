@@ -26,6 +26,21 @@ function formatCurrency(value) {
   return `R$${intPart}${decPart}`;
 }
 
+function sanitizeCurrencyInput(text) {
+  const sanitized = text.replace(/[^\d,.]/g, '');
+  const separatorIndex = sanitized.search(/[,.]/);
+
+  if (separatorIndex === -1) {
+    return sanitized;
+  }
+
+  const integerPart = sanitized.slice(0, separatorIndex).replace(/\D/g, '');
+  const decimalPart = sanitized.slice(separatorIndex + 1).replace(/\D/g, '').slice(0, 2);
+  const separator = sanitized[separatorIndex];
+
+  return `${integerPart || '0'}${separator}${decimalPart}`;
+}
+
 export default function LimitScreen() {
   const { session } = useAuth();
   const token = session?.token;
@@ -153,7 +168,7 @@ export default function LimitScreen() {
           <TextInput
             style={styles.input}
             value={value}
-            onChangeText={setValue}
+            onChangeText={(text) => setValue(sanitizeCurrencyInput(text))}
             keyboardType="decimal-pad"
           />
 
