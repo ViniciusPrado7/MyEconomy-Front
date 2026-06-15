@@ -27,6 +27,21 @@ function formatCurrency(value) {
   return `R$${intPart}${decPart}`;
 }
 
+function sanitizeCurrencyInput(text) {
+  const sanitized = text.replace(/[^\d,.]/g, '');
+  const separatorIndex = sanitized.search(/[,.]/);
+
+  if (separatorIndex === -1) {
+    return sanitized;
+  }
+
+  const integerPart = sanitized.slice(0, separatorIndex).replace(/\D/g, '');
+  const decimalPart = sanitized.slice(separatorIndex + 1).replace(/\D/g, '').slice(0, 2);
+  const separator = sanitized[separatorIndex];
+
+  return `${integerPart || '0'}${separator}${decimalPart}`;
+}
+
 export default function ExpenseScreen() {
   const { session } = useAuth();
   const token = session?.token;
@@ -167,8 +182,8 @@ export default function ExpenseScreen() {
     [handleDelete, handleEdit, queryMonthLocked]
   );
 
-  const renderHeader = () => (
-    <>
+  const listHeader = (
+    <View>
       <Text style={styles.title}>Despesa</Text>
 
       <Text style={styles.label}>Descrição</Text>
@@ -182,7 +197,7 @@ export default function ExpenseScreen() {
       <TextInput
         style={styles.input}
         value={value}
-        onChangeText={setValue}
+        onChangeText={(text) => setValue(sanitizeCurrencyInput(text))}
         keyboardType="decimal-pad"
       />
 
@@ -211,7 +226,7 @@ export default function ExpenseScreen() {
       />
 
       {queryLoading && <ActivityIndicator color="#4DB657" style={styles.loader} />}
-    </>
+    </View>
   );
 
   return (
@@ -223,7 +238,7 @@ export default function ExpenseScreen() {
           data={expenses}
           keyExtractor={(item) => String(item.id)}
           renderItem={renderExpense}
-          ListHeaderComponent={renderHeader}
+          ListHeaderComponent={listHeader}
           ListEmptyComponent={
             !queryLoading && queryMonth !== '' ? (
               <Text style={styles.emptyText}>Nenhuma despesa encontrada.</Text>

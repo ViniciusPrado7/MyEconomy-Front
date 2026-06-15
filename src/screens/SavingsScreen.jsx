@@ -163,7 +163,7 @@ export default function SavingsScreen({ navigation }) {
           <>
             <View style={styles.feedbackCard}>
               <Text style={styles.emoji}>
-                {isClosedMonth ? (isOverLimit ? '😓' : '🤩') : shouldEncourage ? '🙂' : isOverLimit ? '😓' : '🤩'}
+                {isClosedMonth ? (isOverLimit ? '😓' : '🥳') : shouldEncourage ? '🙂' : isOverLimit ? '😓' : '🤩'}
               </Text>
               <Text style={styles.feedbackText}>
                 {isClosedMonth
